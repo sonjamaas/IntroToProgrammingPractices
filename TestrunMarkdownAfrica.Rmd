@@ -1,0 +1,70 @@
+---
+title: "TestrunMarkdownAfrica"
+author: "Sonja Maas"
+date: "2023-10-31"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library("terra")
+library("rnaturalearth")
+library("sf")
+library("geodata")
+library("rnaturalearth")
+library("rnaturalearthdata")
+```
+
+# Make a temperature curve and plot for Africa
+&nbsp;
+
+### Get the country borders. Other options can be found in the manual.
+
+```{r}
+afr <- ne_countries(continent="Africa", scale= "medium", returnclass="sf")
+```
+&nbsp;
+
+### Plot African boundaries.
+
+```{r, fig.dim=c(6.5,2)}
+plot(afr)
+```
+&nbsp;
+
+### Get the maximum temperatures data.
+
+```{r}
+clim <- geodata::worldclim_global(var='tmax', res=10, download=T, path='.')
+```
+&nbsp;
+
+### Plot the data.
+
+```{r, fig.dim=c(6.5,4)}
+plot(clim)
+```
+&nbsp;
+
+### Check if the project matches (transform "afr" into vector (sf) file) and reproject it.
+
+```{r, fig.dim=c(6.5,6)}
+afr.r <- st_transform(afr,st_crs(clim))
+clim_afr_crop <- terra::crop(clim, afr.r)
+plot(clim_afr_crop)
+```
+&nbsp;
+
+### Cut the temperature data to the mask of Africa and plot it.
+
+```{r, fig.dim=c(6.5,6)}
+clim_afr_mask <- terra::mask(clim_afr_crop, afr.r)
+plot(clim_afr_mask)
+```
+&nbsp;
+
+### Extract the average temperature of Africa and plot it. Other statistics are possible as well.
+
+```{r, fig.dim=c(6.5,6)}
+climafr_vect <- terra::extract(clim_afr_mask, afr, mean)
+plot(unlist(climafr_vect[,2:13]))
+```
