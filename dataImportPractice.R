@@ -1,10 +1,11 @@
-getwd() ##get working directory
+getwd()                      ##get working directory
 
-my.df <- read.csv("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/lecture2/tablePractice.csv", header=TRUE,sep=";") ##import a table from a .csv file
-my.df ##show table in console
+my.df <- read.csv("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/lecture2/tablePractice.csv", 
+    header=TRUE,sep=";")     ##import a table from a .csv file
+my.df                        ##show table in console
 
-head(my.df) ##show head of table
-summary(my.df) ##summarize table
+head(my.df)                  ##show head of table
+summary(my.df)               ##summarize table
 
 write.table(my.df, file="tablePracticeExport.csv", sep = ";") ##export table as .csv
 
@@ -34,19 +35,18 @@ tail(df)
 summary(df)
 plot(df)
 str(df)
+ 
+X <- seq(1,100,by=2.5)       ##create new sequence from 1 to 100 with 2.5 steps
+X[5]                         ##get 5th position of sequence
+X[4:10]                      ##get 4th to 10th positions of sequence
+X[length(X)]                 ##get the last number of the sequence
+X[-2:-10]                    ##get the sequence without 2nd to 10th positions
+X[-6]                        ##get sequence without 6th position
+X>20                         ##get all numbers that are lwer than 20
+X[X<10|X>30]                 ##get numbers of sequence between 10 and 30
 
-X <- seq(1,100,by=2.5)
-X
-X[5]
-X[4:10]
-X[length(X)]
-X[-2:-10]
-X[-6]
-X>20
-X[X<10|X>30]
-X2 <- numeric(length(X))
-X2
-X2[X<=30] <- 1
+X2 <- numeric(length(X))     ##get an empty sequence the length of X
+X2[X<=30] <- 1               ##
 X2
 X2[(X>30)&(X<70)] <- 2
 X2
