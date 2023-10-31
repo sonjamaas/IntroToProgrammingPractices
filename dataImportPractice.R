@@ -1,15 +1,12 @@
-getwd()
+getwd() ##get working directory
 
-my.df <- read.table("tablePractice.csv", header=TRUE,sep="/")
+my.df <- read.csv("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/lecture2/tablePractice.csv", header=TRUE,sep=";") ##import a table from a .csv file
+my.df ##show table in console
 
-my.df
-head(my.df)
+head(my.df) ##show head of table
+summary(my.df) ##summarize table
 
-my.df2 <- read.csv("tablePractice.csv", header=TRUE,sep=";")
-my.df2
-head(my.df2)
-summary(my.df2)
-write.table(my.df2, file="tablePracticeExport.csv", sep = ";")
+write.table(my.df, file="tablePracticeExport.csv", sep = ";") ##export table as .csv
 
 install.packages("datapasta")
 library(datapasta)
