@@ -1,4 +1,3 @@
 # IntroToProgrammingPractices
-hello can you read this
 
-yes of course
+This repository is for the practice files from the lecture "Introduction to programming".
