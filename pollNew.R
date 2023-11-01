@@ -37,10 +37,19 @@ df$os <- trimws(df$os)
 #clean lang
 df$lang <- gsub("[*]","",df$lang)
 df$lang <- trimws(df$lang)
+
+df$lang <- gsub(r"{\s*\([^\)]+\)}","",as.character(df$lang))  # get rid of stuff in brackets
+df$lang <- gsub(" and",",",df$lang)      # replace "and" with comma
+df$lang <- gsub("[-]","",df$lang)        # get rid of "r-studio" and make it to "rstudio"
+
 df$lang[df$lang=="no one"] <- "None"
 df$lang <- tolower(df$lang) #make everything lower case
 
-#task1: how can we make a vector from df lang that contains each language mentioned as a single element
+#task1: how can we make a vector from df$lang that contains each language mentioned as a single element
 #python, r, javascript, rstudio, r, python ....
+lang <- c(df$lang)
+lang
+
+
 #task2: visualization by wordcloud (install package workcloud, load it and try to make a word cloud from language vector)
 df$lang
