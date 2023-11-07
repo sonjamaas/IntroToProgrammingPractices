@@ -44,3 +44,31 @@ df$lang <- tolower(df$lang) #make everything lower case
 #python, r, javascript, rstudio, r, python ....
 #task2: visualization by wordcloud (install package workcloud, load it and try to make a word cloud from language vector)
 df$lang
+lang <- gsub(" ", "",unlist(strsplit(df$lang, ", "))) #new variable, get rid of spaces, make one string of all entries
+lang_count <- table(lang)                             #what number of each object
+names(lang_count) 
+
+install.packages("wordcloud")
+library(wordcloud)
+#install.packages("tm")
+#install.packages("slam")
+#library(tm)
+#library(slam)
+#wordcloud::wordcloud(words=lang, min.freq=1, scale=c(3,0.7)) #::is like library
+
+wordcloud::wordcloud(names(lang_count),freq=lang_count, min.freq=1)
+
+
+fruits <- matrix(c(1,2,1,3,1,1,3,1,2),
+                 ncol=3)
+
+fruits[[2]]
+fruits
+
+fruits2 <- data.frame(apples=c(1,2,1),
+                     pears=c("a","b","c"),
+                     bananas=c(TRUE,TRUE,TRUE))
+fruits2
+fruits2[2:3,2]
+fruits2$apples[2:3]
+fruits2[[2]][2:3]
