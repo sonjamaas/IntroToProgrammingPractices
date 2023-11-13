@@ -16,10 +16,26 @@ df[,3:12]
 library(car)
 install.packages("carData")
 library(carData)
-
+install.packages("paletteer")
+library(paletteer)
+install.packages("ggthemes")
+library(ggthemes)
+install.packages("viridis")
+library(viridis)
 
 #PLotting
 plot(df[df["SRTM"]>400,c("TimeScan.NDVImax","SRTM")])
+
+#create empty plot (no geom added)
+ggplot(df,aes(x=L8.ndvi,y=L8.savi))
+
+#create scatterplot
+ggplot(df,aes(x=L8.ndvi,y=L8.savi))+
+  geom_point()
+
+#add information using colour
+ggplot(df,aes(x=L8.ndvi,y=L8.savi, colour=SRTM))+
+  geom_point()
 
 #recreate cover image
 library(ggplot2)
