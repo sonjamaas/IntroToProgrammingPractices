@@ -11,7 +11,7 @@ library(ggplot2)
 
 png("text1.png")
 plot.new()
-text(x=0.5,y=0.5,"Hello There",cex=3)
+text(x=0.5,y=0.5,"Hello there",cex=3)
 dev.off()
 
 png("text2.png")
@@ -30,19 +30,19 @@ b2 <- read.bitmap("text2.png")
 x1 <- 1 - b1[,,1]
 x2 <- 1 - b2[,,1]
 
-df_eagle <- data.frame(row=as.vector(col(x1)), 
+df_text1 <- data.frame(row=as.vector(col(x1)), 
                        col=8 - as.vector(row(x1)),
                        value=as.vector(x1)) %>% 
   filter(value==1)
 
 
-df_eo <- data.frame(row=as.vector(col(x2)), 
+df_text2 <- data.frame(row=as.vector(col(x2)), 
                     col=8 - as.vector(row(x2)),
                     value=as.vector(x2)) %>% 
   filter(value==1) 
 plot_df <- bind_rows(
-  df_eagle %>% mutate(idx=1),
-  df_eo %>% mutate(idx=2)
+  df_text1%>% mutate(idx=1),
+  df_text2 %>% mutate(idx=2)
 )
 
 # create the plot with the two text parts
@@ -55,17 +55,17 @@ p <- ggplot(plot_df, aes(row, col)) + geom_tile(fill="hotpink", width=1, height=
 p  
 
 # create the actual animation
-eagle_eo_anim <- p +
+text_anim <- p +
   transition_states(
     states            = idx, # variable in data
-    transition_length = .2,   # all states display for 1 time unit
-    state_length      = 1    # all transitions take 1 time unit
+    transition_length = 1,   # all states display for 1 time unit
+    state_length      = .5    # all transitions take 1 time unit
   ) +
   enter_fade() +             # How new blocks appear
   exit_fade() +              # How blocks disappear
   ease_aes('sine-in-out')    # Tweening movement
 
-eagle_eo_anim
+text_anim
 
 # save the animation with specific frames, size etc.
-save_animation(animate(eagle_eo_anim, fps=20, nframes=50, width=2800, height=400), "hello.gif")
+save_animation(animate(text_anim, fps=20, nframes=50, width=2800, height=400), "hello.gif")
