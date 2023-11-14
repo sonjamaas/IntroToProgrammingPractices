@@ -1,8 +1,8 @@
 #Eagle skills Animation
-#install.packages("gganimate")
-#install.packages("gifski")#
-#install.packages("av")
-#install.packages("png")
+install.packages("gganimate")
+install.packages("gifski")#
+install.packages("av")
+install.packages("png")
 library(png)
 library (RCurl)
 library(ggplot2)
@@ -10,7 +10,7 @@ library(gganimate)
 library(gifski)
 library(av)
 
-df <- read.csv("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/GitPractice/GitPractices/EAGLE_course_ggplot - Form responses 1.csv")
+df <- read.csv("C:/Users/sonja/OneDrive/Dokumente/EAGLE_Msc/Semester1/Intro_to_Programming/GitPractices/IntroToProgrammingPractices/EAGLE_course_ggplot - Form responses 1.csv")
 summary(df)
 head(df)
 
