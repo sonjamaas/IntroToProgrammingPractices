@@ -111,3 +111,16 @@ ggplot(df,aes(factor(LCname),color='red')) +
   geom_point(aes(y=TimeScan.NDVImax),shape="triangle",color='black') +
   geom_point(aes(y=TimeScan.NDVImin),shape="square",color='yellow')
 
+
+install.packages("sf")
+library(sf)
+
+#data frame to spatial object
+projcrs <- st_crs(32632)
+df.sf <- st_as_sf(x=df,
+                  coords=c("x","y"),
+                  crs=projcrs) #UTM WGS84 32N, epsg:32632
+plot(df.sf)
+
+st_write(df.sf,"C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/GitPractice/GitPractices/steigerwaldExerciseSF/my_shapefile.shp")
+st_write(df.sf,"C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/GitPractice/GitPractices/steigerwaldExerciseSF/my_shapefile.gpkg")
