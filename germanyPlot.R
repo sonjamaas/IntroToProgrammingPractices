@@ -10,7 +10,7 @@ class(world)
 plot(world)
 View(world)
 
-ger <- world[(which(world$NAME=="Germany")),]
+ger <- world[(which(world$NAME=="Germany")),]                                    #select germany from the world dataset
 
 
 ggplot() +
