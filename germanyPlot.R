@@ -17,7 +17,7 @@ ger_sf <- st_as_sf(ger)
 ggplot() +
   geom_sf(data = ger_sf, fill = "lightblue", color = "black") +
   theme_minimal() +
-  ggtitle("Germany")
+  ggtitle("Germany")                                                             #plot germany map
 
 
 ggplot()+
@@ -25,5 +25,5 @@ ggplot()+
   annotation_scale(location="bl", width_hint=0.5)+
   annotation_north_arrow(location="bl", which_north="true",
                          pad_x=unit(0.2,"in"), pad_y=unit(0.5,"in"),
-                         style=north_arrow_fancy_orienteering)
+                         style=north_arrow_fancy_orienteering)                   #plot germany with north arrow and scale bar
 
