@@ -1,7 +1,7 @@
 devtools::install_github("gsimchoni/kandinsky")
 library(kandinsky)
 
-kandinsky(Formaldehyde)
+kandinsky(Indometh)
 data()
 
 
