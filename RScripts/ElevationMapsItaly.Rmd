@@ -1,0 +1,63 @@
+---
+title: "Italy Heigths"
+author: "Sonja Maas"
+date: "2023-10-31"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library("terra")
+library("rnaturalearth")
+library("sf")
+library("geodata")
+library("rnaturalearth")
+library("rnaturalearthdata")
+```
+
+# Make a elevation map for Italy.
+&nbsp;
+
+### Get the country borders. Other options can be found in the manual.
+
+```{r}
+ital <- ne_countries(country="Italy", scale= "medium", returnclass="sf")
+```
+&nbsp;
+
+### Plot Italian boundaries.
+
+```{r, fig.dim=c(6.5,2)}
+plot(ital)
+```
+&nbsp;
+
+### Get the elevation data.
+
+```{r}
+heig <- geodata::elevation_global(res=10, download=T, path='.')
+```
+&nbsp;
+
+### Plot the data.
+
+```{r, fig.dim=c(6.5,4)}
+plot(heig)
+```
+&nbsp;
+
+### Check if the project matches (transform "ital" into vector (sf) file) and reproject it.
+
+```{r, fig.dim=c(6.5,6)}
+ital.r <- st_transform(ital,st_crs(heig))
+heig_ital_crop <- terra::crop(heig, ital.r)
+plot(heig_ital_crop)
+```
+&nbsp;
+
+### Cut the elevation data to the mask of Italy and plot it.
+
+```{r, fig.dim=c(6.5,6)}
+heig_ital_mask <- terra::mask(heig_ital_crop, ital.r)
+plot(heig_ital_mask)
+```
+&nbsp;
