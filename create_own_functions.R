@@ -1,11 +1,11 @@
 ##Creating your own functions
 
-myfunction <- function(x,y){
+addTwoNumbers <- function(x,y){
   z <- x+y
   return(z)
 }
 
-myfunction(5,2)
+addTwoNumbers(5,2)
 
 
 greet <- function(name){
@@ -13,3 +13,10 @@ greet <- function(name){
 }
 
 greet("Sonja")
+
+
+substractTwoNumbers <- function(x,y){
+  z <- x-y
+  return(z)
+}
+
