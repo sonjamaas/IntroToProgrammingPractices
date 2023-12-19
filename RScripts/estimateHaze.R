@@ -1,0 +1,97 @@
+estimateHaze <- function(x, hazeBands, darkProp = 0.01, maxSlope = TRUE, plot = FALSE, returnTables = FALSE) {
+  ## Initial or repeated run?
+  if(inherits(x, "SpatRaster")) {
+    preCalc <- FALSE
+  } else {
+    if(is.list(x) & "table" %in% names(x)) {
+      preCalc <- TRUE
+      returnTables <- TRUE
+    } else {
+      stop("x must be a SpatRaster or the result of a previous run of estimateHaze(SpatRaster, ...) with argument 'returnTables = TRUE'", call. = FALSE)
+    }
+  }
+  
+  if(!preCalc){
+    if(missing(hazeBands)){
+      if(nlyr(x) == 1) {
+        hazeBands <- names(x)
+      } else {
+        stop("Please specify the band from which you want to estimate the haze dn")
+      }
+    }
+    if(is.numeric(hazeBands)) hazeBands <- names(x)[hazeBands]
+    
+  } else {
+    
+    if(is.numeric(hazeBands)) hazeBands <- names(x$table)[hazeBands]
+    preCalcAvail <- hazeBands %in% names(x$table)
+    if(!any(preCalcAvail))     stop("Cannot estimate SHV because tables are missing for all specified bands", call. = FALSE)
+    
+    if(any(!preCalcAvail)) {
+      warning(paste0("Cannot estimate SHV for >> ", hazeBands[!preCalcAvail], " << because tables are missing."), call. = FALSE)
+      hazeBands <- hazeBands[preCalcAvail]
+    }
+  }
+  
+  ## Prepare plot device
+  if(plot){
+    olpar <- par(no.readonly = TRUE)
+    on.exit(par(olpar))
+    if(length(hazeBands) > 1){
+      par(mfrow = c(2, ceiling(length(hazeBands)/2)))
+    }
+  }
+  
+  
+  ## Run estimation for each band separately
+  out   <- lapply(hazeBands, function(bi) {
+    if(!preCalc) {
+      tf <- freq(x[[bi]])
+      tf <- tf[,-1]
+      tf <- tf[order(tf[,1]),]
+    } else {
+      tf <- x$table[[bi]]
+    }
+    
+    tf <- tf[tf[,1] > 0,]
+    tf[,2] <- tf[,2]/sum(tf[,2])
+    
+    ## Get darkProp quantile
+    kusu <- cumsum(tf[,2])
+    idx  <- tail(which(kusu < darkProp), 1)
+    if(length(idx) == 0) idx <- 1
+    
+    ## Select SHV
+    if(maxSlope & idx > 1){
+      ## Moving average smoother
+      n <- 2*floor((idx/10)/2) + 1  # next odd integer
+      tsmo  <- stats::filter(tf[1:idx, 2], rep(1/n, n), sides=2)
+      SHV   <- tf[min(which.max(diff(tsmo, 2))+1,idx),1]
+    } else {
+      SHV <- tf[idx,1]               
+    }
+    
+    # if(is.na(SHV)) warning(paste("darkProp for band", bi, "was chosen too high. It exceeds the value range."), call. = FALSE)
+    
+    if(plot){
+      plot(tf, xlab = "DN", ylab = "Frequency", type = "l", main = bi)
+      abline(v = tf[tf[,1]==SHV,1], col="red")
+      if(maxSlope)  abline(v = darkProp, col = "grey20", lty = 2)                                      
+      text(SHV, max(tf[,2]), pos = 4, label = paste0("\nSHV_DN = ", SHV), col = "red")            
+      #  text(max(tf[,1]), darkProp+0.001, label = "darkProp", adj=1, col = "grey20")
+    }
+    
+    return(list(table = tf, SHV = SHV))
+  })
+  
+  SHV <- unlist(lapply(out, "[", 2))
+  names(SHV) <- hazeBands
+  
+  if(!preCalc){
+    table <- sapply(out, "[", 1)
+    names(table) <- hazeBands
+  } else {
+    table <- x$table
+  }
+  return( if(!returnTables) SHV else list(SHV=SHV, table = table))
+}
