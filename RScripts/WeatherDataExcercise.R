@@ -59,8 +59,10 @@ result_tidy <- result_tidy[2:length(result_tidy)]
 # 138: 2018
 result_tidy <- result_tidy[c(seq(1,138, by=1))]
 
-# Define working directory
-setwd("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/GitPractice/GitPractices/Data")
+# Define working directory for Laptop
+#setwd("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/GitPractice/GitPractices/Data")
+# for PC
+setwd("C:/Users/sonja/OneDrive/Dokumente/EAGLE_Msc/Semester1/Intro_to_Programming/GitPractices/IntroToProgrammingPractices/Data")
 
 # Define output directory of downloads
 # create one if not yet there, warning if it exists
@@ -127,16 +129,16 @@ filenames <- paste0(mypath, temp)
 ### NEW CODE ###
 
 # Load the new packages
- library(sf)
- library(terra)
-# 
-# # Create an empty terra object to store the raster stack
- my_raster <- terra()
-# 
-# # Loop through the filenames and read each ASCII grid file
+library(sf)
+library(terra)
+library(RSAGA)
 
-  for (i in 1:length(filenames)) {
-   current_ascii <- read.asciigrid(filenames[i])
+## Create an empty terra object to store the raster stack
+my_raster <- rast()
+ 
+## Loop through the filenames and read each ASCII grid file
+for (i in 1:length(filenames)) {
+   current_ascii <- read.ascii.grid(filenames[i], return.header=FALSE)
    current_raster <- rast(current_ascii)
    
    # For the first run, assign the current raster to my_raster
@@ -150,12 +152,12 @@ filenames <- paste0(mypath, temp)
    # Remove the current_raster object
    rm(current_ascii, current_raster)
  }
-# 
-# # Check the structure of my_raster
+ 
+# Check the structure of my_raster
 my_raster
 # 
- layer_names <- c(paste0("Year_", seq(1881, 2018, by = 1)))
- names(my_raster) <- layer_names
+layer_names <- c(paste0("Year_", seq(1881, 2018, by = 1)))
+names(my_raster) <- layer_names
 
 # Subset Raster-Stack into old dates and new date
 # select range of historical data to subset
@@ -201,12 +203,9 @@ minVal <- min(c(unique(values(rasterComp)),unique(values(rasterHist_mean))),na.r
 
 rdf <- as.data.frame(rasterHist_mean, xy=TRUE)
 summary(rdf)
-class(rdf)
-View(rdf)
-plot(rdf)
 
 p1 <- ggplot()+
-  geom_raster(data=rdf, aes(x=x, y=y, fill = rdf$mean))+
+  geom_raster(data=rdf, aes(x=x, y=y, fill = layer))+
   coord_sf()+
   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
   labs(x="",y="")+
@@ -234,7 +233,6 @@ p1 <- ggplot()+
 #   ylab("")
 
 rdf2 <- as.data.frame(rasterComp, xy=TRUE)
-View(rdf2)
 
 p2 <- ggplot()+
   geom_raster(data=rdf2, aes(x=x, y=y, fill=Year_2018))+
@@ -255,35 +253,61 @@ pdf("August_mean_vs_2018.pdf", width = 14, height = 8)
 grid.arrange(p1, p2, ncol=2)
 dev.off()
 
+#### OLD CODE ####
 # side-by-side plots, same height, just one legend
-library(RStoolbox)
-df <- ggR(rasterHist_mean, ggObj = FALSE)
-df2 <- ggR(rasterComp, ggObj = FALSE)
-colnames(df)[3] <- colnames(df2)[3] <- "values"
-dfab <- rbind(data.frame(df,band="1961-2017 (mean)"), data.frame(df2,band="2018"))
+# library(RStoolbox)
+# df <- ggplot(as.data.frame(rasterHist_mean, xy=TRUE))
+# df2 <- ggplot(as.data.frame(rasterComp, xy=TRUE))
+# colnames(df)[3] <- colnames(df2)[3] <- "values"
+# dfab <- rbind(data.frame(df,band="1961-2017 (mean)"), data.frame(df2,band="2018"))
+# pdf("August_mean_vs_2018_2.pdf", width = 12, height = 8)
+# 
+# ggplot(dfab, aes(x,y,fill=values))+geom_raster()+facet_grid(.~band)+
+#   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
+#   labs(x="",y="")+
+#   ggtitle("Differences in Temperatures: August")+
+#   theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
+#   theme(legend.title = element_text(size = 12, face = "bold"))+
+#   theme(legend.text = element_text(size = 10))+
+#   theme(axis.text.y = element_text(angle=90))+
+#   scale_y_continuous(breaks = seq(5400000,6000000,200000))+
+#   xlab("")+
+#   ylab("")+
+#   coord_equal()
+# dev.off()
 
-pdf("August_mean_vs_2018_2.pdf", width = 12, height = 8)
+#### NEW CODE ####
+#two plots side by side with one scale
+#install.packages("ggpubr")
+library(ggpubr)
+ggarrange(p1,p2,ncol=2, common.legend=TRUE, legend="right")
 
-ggplot(dfab, aes(x,y,fill=values))+geom_raster()+facet_grid(.~band)+
-  scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
-  labs(x="",y="")+
-  ggtitle("Differences in Temperatures: August")+
-  theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
-  theme(legend.title = element_text(size = 12, face = "bold"))+
-  theme(legend.text = element_text(size = 10))+
-  theme(axis.text.y = element_text(angle=90))+
-  scale_y_continuous(breaks = seq(5400000,6000000,200000))+
-  xlab("")+
-  ylab("")+
-  coord_equal()
-dev.off()
+
 
 # compute difference of historical and raster to compare with
 raster_diff <- rasterComp - rasterHist_mean
+View(raster_diff)
 
+#### OLD CODE ####
 # Create Difference Map
-p3 <- ggR(raster_diff, geom_raster = T)+
-  scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temp. diff.", na.value = NA)+
+# p3 <- ggplot(as.data.frame(raster_diff, xy= TRUE), geom_raster = T)+
+#   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temp. diff.", na.value = NA)+
+#   labs(x="",y="")+
+#   ggtitle("Temperature Differences")+
+#   theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
+#   theme(legend.title = element_text(size = 12, face = "bold"))+
+#   theme(legend.text = element_text(size = 10))+
+#   theme(axis.text.y = element_text(angle=90))+
+#   scale_y_continuous(breaks = seq(5400000,6000000,200000))+
+#   xlab("")+
+#   ylab("")
+
+
+#### NEW CODE ####
+p3 <- ggplot()+
+  geom_raster(data=as.data.frame(raster_diff, xy= TRUE), aes(x=x, y=y, fill=layer))+
+  coord_sf()+
+  scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temp. diff", na.value = NA)+
   labs(x="",y="")+
   ggtitle("Temperature Differences")+
   theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
@@ -291,7 +315,7 @@ p3 <- ggR(raster_diff, geom_raster = T)+
   theme(legend.text = element_text(size = 10))+
   theme(axis.text.y = element_text(angle=90))+
   scale_y_continuous(breaks = seq(5400000,6000000,200000))+
-  xlab("")+
+  xlab("")+  
   ylab("")
 
 
