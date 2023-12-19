@@ -205,10 +205,11 @@ class(rdf)
 View(rdf)
 plot(rdf)
 
-p1 <- ggplot()+geom_raster(data=rdf, aes(x=x, y=y, fill=layer))+
+p1 <- ggplot()+
+  geom_raster(data=rdf, aes(x=x, y=y, fill = rdf$mean))+
   coord_sf()+
   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
-  labs(x="",y="")
+  labs(x="",y="")+
   ggtitle("Mean Temperatures August 1881-2017")+
   theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
   theme(legend.title = element_text(size = 12, face = "bold"))+
@@ -235,7 +236,8 @@ p1 <- ggplot()+geom_raster(data=rdf, aes(x=x, y=y, fill=layer))+
 rdf2 <- as.data.frame(rasterComp, xy=TRUE)
 View(rdf2)
 
-p2 <- ggplot()+geom_raster(data=rdf2, aes(x=x, y=y, fill=Year_2018))+
+p2 <- ggplot()+
+  geom_raster(data=rdf2, aes(x=x, y=y, fill=Year_2018))+
   coord_sf()+
   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
   labs(x="",y="")+
