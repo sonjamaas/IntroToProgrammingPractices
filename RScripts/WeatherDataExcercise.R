@@ -60,7 +60,7 @@ result_tidy <- result_tidy[2:length(result_tidy)]
 result_tidy <- result_tidy[c(seq(1,138, by=1))]
 
 # Define working directory
-setwd("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/GitPractice/GitPractices")
+setwd("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/GitPractice/GitPractices/Data")
 
 # Define output directory of downloads
 # create one if not yet there, warning if it exists
@@ -97,71 +97,73 @@ filenames <- paste0(mypath, temp)
 
 ### OLD CODE ###
 
- library(sp)
- library(raster)
+# library(sp)
+# library(raster)
 
- for (i in 1:length(filenames)){
-   if (i == 1){
-     # for the first run define our final raster file ...
-     current_ascii <- read.asciigrid(filenames[i])
+# for (i in 1:length(filenames)){
+#  if (i == 1){
+#     # for the first run define our final raster file ...
+#     current_ascii <- read.asciigrid(filenames[i])
      # remove the raster in case it already exists to avoid duplicate entries
      # rm(my_raster)
-     my_raster <- raster(current_ascii)
-   } else {
-     # ... and fill it with each additional run with another layer
-     current_ascii <- read.asciigrid(filenames[i])
-     current_raster <- raster(current_ascii)
-     my_raster <- stack(my_raster, current_raster)
-     # Delete all variables except for the raster stack "my_raster"
-     rm(i, current_ascii, current_raster)
-   }
- }
+#     my_raster <- raster(current_ascii)
+#   } else {
+#     # ... and fill it with each additional run with another layer
+#     current_ascii <- read.asciigrid(filenames[i])
+#     current_raster <- raster(current_ascii)
+#     my_raster <- stack(my_raster, current_raster)
+#     # Delete all variables except for the raster stack "my_raster"
+#     rm(i, current_ascii, current_raster)
+#   }
+# }
 ## optional to check the structure
 # my_raster
 
 # Change names of raster layers
 # adapt sequence in case you subsetted the data before
-layer_names <- c(paste0("Year_", seq(1881, 2018, by=1)))
-names(my_raster) <- layer_names
+#layer_names <- c(paste0("Year_", seq(1881, 2018, by=1)))
+#names(my_raster) <- layer_names
 
 ### NEW CODE ###
 
 # Load the new packages
-# library(sf)
-# library(terra)
+ library(sf)
+ library(terra)
 # 
 # # Create an empty terra object to store the raster stack
-# my_raster <- terra()
+ my_raster <- terra()
 # 
 # # Loop through the filenames and read each ASCII grid file
-# for (i in 1:length(filenames)) {
-#   current_ascii <- read.asciigrid(filenames[i])
-#   current_raster <- rast(current_ascii)
-#   
-#   # For the first run, assign the current raster to my_raster
-#   if (i == 1) {
-#     my_raster <- current_raster
-#   } else {
-#     # For subsequent runs, stack the current raster on top of my_raster
-#     my_raster <- c(my_raster, current_raster)
-#   }
-#   
-#   # Remove the current_raster object
-#   rm(current_ascii, current_raster)
-# }
+
+  for (i in 1:length(filenames)) {
+   current_ascii <- read.asciigrid(filenames[i])
+   current_raster <- rast(current_ascii)
+   
+   # For the first run, assign the current raster to my_raster
+   if (i == 1) {
+     my_raster <- current_raster
+   } else {
+     # For subsequent runs, stack the current raster on top of my_raster
+     my_raster <- c(my_raster, current_raster)
+   }
+   
+   # Remove the current_raster object
+   rm(current_ascii, current_raster)
+ }
 # 
 # # Check the structure of my_raster
-# my_raster
+my_raster
 # 
-# layer_names <- c(paste0("Year_", seq(1881, 2018, by = 1)))
-# names(my_raster) <- layer_names
+ layer_names <- c(paste0("Year_", seq(1881, 2018, by = 1)))
+ names(my_raster) <- layer_names
 
 # Subset Raster-Stack into old dates and new date
 # select range of historical data to subset
 
 # time-series data, to use for temporal aggregation
 # define the first and last year to grab from the time series 
-rasterHist <- my_raster[[grep("1961", layer_names):grep("1990", layer_names)]]
+
+ rasterHist <- my_raster[[grep("1961", layer_names):grep("1990", layer_names)]]
 
 # year for comparison to long term statistics
 rasterComp <- my_raster$Year_2018
@@ -171,8 +173,8 @@ rasterComp <- my_raster$Year_2018
 # ftp://ftp-cdc.dwd.de/pub/CDC/grids_germany/monthly/air_temperature_mean/DESCRIPTION_gridsgermany_monthly_air_temperature_mean_en.pdf
 my_crs <- "+init=epsg:31467"
 
-rasterHist@crs <- sp::CRS(my_crs)
-rasterComp@crs <- sp::CRS(my_crs)
+#rasterHist@crs <- sp::CRS(my_crs)
+#rasterComp@crs <- sp::CRS(my_crs)
 
 # For 'terra' package
 terra::crs(rasterHist) <- my_crs
@@ -206,7 +208,7 @@ plot(rdf)
 p1 <- ggplot()+geom_raster(data=rdf, aes(x=x, y=y, fill=layer))+
   coord_sf()+
   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
-  labs(x="",y="")+
+  labs(x="",y="")
   ggtitle("Mean Temperatures August 1881-2017")+
   theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
   theme(legend.title = element_text(size = 12, face = "bold"))+
