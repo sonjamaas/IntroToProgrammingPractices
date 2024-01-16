@@ -165,7 +165,7 @@ names(my_raster) <- layer_names
 # time-series data, to use for temporal aggregation
 # define the first and last year to grab from the time series 
 
- rasterHist <- my_raster[[grep("1961", layer_names):grep("1990", layer_names)]]
+rasterHist <- my_raster[[grep("1961", layer_names):grep("1990", layer_names)]]
 
 # year for comparison to long term statistics
 rasterComp <- my_raster$Year_2018
@@ -194,9 +194,11 @@ rasterComp <- rasterComp/10
 rasterHist_mean <- mean(rasterHist)
 
 # library(RStoolbox)
-# library(gridExtra)
+library(gridExtra)
 library(ggplot2)
 library(raster)
+install.packages("stars")
+library(stars)
 
 maxVal <- max(c(unique(values(rasterComp)),unique(values(rasterHist_mean))),na.rm=T)
 minVal <- min(c(unique(values(rasterComp)),unique(values(rasterHist_mean))),na.rm=T)
@@ -205,9 +207,9 @@ rdf <- as.data.frame(rasterHist_mean, xy=TRUE)
 summary(rdf)
 
 p1 <- ggplot()+
-  geom_raster(data=rdf, aes(x=x, y=y, fill = layer))+
+  geom_stars(data = st_as_stars(rasterHist_mean))+
   coord_sf()+
-  scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
+  scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="Temperature", na.value = NA, limits=c(minVal,maxVal))+
   labs(x="",y="")+
   ggtitle("Mean Temperatures August 1881-2017")+
   theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
@@ -220,22 +222,22 @@ p1 <- ggplot()+
 
 
 # p1 <- ggR(rdf, geom_raster = T)+
-#   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
-#   # , guide = F
-#   labs(x="",y="")+
-#   ggtitle("Mean Temperatures August 1881-2017")+
-#   theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
-#   theme(legend.title = element_text(size = 12, face = "bold"))+
-#   theme(legend.text = element_text(size = 10))+
-#   theme(axis.text.y = element_text(angle=90))+
-#   scale_y_continuous(breaks = seq(5400000,6000000,200000))+
-#   xlab("")+
-#   ylab("")
+#    scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
+#    # , guide = F
+#    labs(x="",y="")+
+#    ggtitle("Mean Temperatures August 1881-2017")+
+#    theme(plot.title = element_text(hjust = 0.5, face="bold", size=15))+
+#    theme(legend.title = element_text(size = 12, face = "bold"))+
+#    theme(legend.text = element_text(size = 10))+
+#    theme(axis.text.y = element_text(angle=90))+
+#    scale_y_continuous(breaks = seq(5400000,6000000,200000))+
+#    xlab("")+
+#    ylab("")
 
 rdf2 <- as.data.frame(rasterComp, xy=TRUE)
 
 p2 <- ggplot()+
-  geom_raster(data=rdf2, aes(x=x, y=y, fill=Year_2018))+
+  geom_stars(data = st_as_stars(rasterComp))+
   coord_sf()+
   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temperature", na.value = NA, limits=c(minVal,maxVal))+
   labs(x="",y="")+
@@ -305,7 +307,7 @@ View(raster_diff)
 
 #### NEW CODE ####
 p3 <- ggplot()+
-  geom_raster(data=as.data.frame(raster_diff, xy= TRUE), aes(x=x, y=y, fill=layer))+
+  geom_stars(data = st_as_stars(raster_diff))+
   coord_sf()+
   scale_fill_gradient2(low="blue", mid='yellow', high="red", name ="temp. diff", na.value = NA)+
   labs(x="",y="")+
@@ -320,7 +322,7 @@ p3 <- ggplot()+
 
 
 pdf("August_mean_vs_2018_vs_diff.pdf", width = 20, height = 8)
-grid.arrange(p1, p2, p3, ncol=3)
+ggarrange(p1,p2,p3,ncol=3, common.legend=TRUE, legend="right")
 dev.off()
 
 
@@ -330,7 +332,8 @@ dev.off()
 #################################
 
 # Add Coordinate Reference System to rasterstack
-my_raster@crs <- sp::CRS(my_crs)
+#my_raster@crs <- sp::CRS(my_crs)
+terra::crs(my_raster) <- my_crs
 
 # Defide raster by 10 to get ?C values
 # my_raster <- my_raster/10
