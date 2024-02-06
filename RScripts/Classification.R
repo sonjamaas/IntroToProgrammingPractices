@@ -29,12 +29,24 @@ ggR(uc$map, forceCat=TRUE, geom_raster=TRUE)
 ###############################
 
 # load the raster data (.tif) and plot it
-raster <- rast("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/outputClassificationData.tif")
+
+# Laptop:
+# raster <- rast("C:/Users/sonja/Documents/Dokumente/Studium/Master/Intro_to_programming/outputClassificationData.tif")
+
+# PC:
+raster <- rast("C:/Users/sonja/OneDrive/Dokumente/EAGLE_Msc/Semester1/Intro_to_Programming/GitPractices/IntroToProgrammingPractices/Data/outputClassificationData.tif")
 map1 <- ggRGB(raster, stretch="lin")+ggtitle("RGB Image")
 
+
 # load training and validation data
-train <- read_sf("C:/Users/sonja/Downloads/data_book/vector_data/training_2011.shp")
-vali <- read_sf("C:/Users/sonja/Downloads/data_book/vector_data/validation_2011.shp")
+
+# Laptop:
+# train <- read_sf("C:/Users/sonja/Downloads/data_book/vector_data/training_2011.shp")
+# vali <- read_sf("C:/Users/sonja/Downloads/data_book/vector_data/validation_2011.shp")
+
+# PC:
+train <- read_sf("C:/Users/sonja/OneDrive/Dokumente/EAGLE_Msc/Semester1/Intro_to_Programming/GitPractices/IntroToProgrammingPractices/Data/ClassificationExercise/training_2011.shp")
+vali <- read_sf("C:/Users/sonja/OneDrive/Dokumente/EAGLE_Msc/Semester1/Intro_to_Programming/GitPractices/IntroToProgrammingPractices/Data/ClassificationExercise/validation_2011.shp")
 
 # do the supervised classification and plot it
 class <- superClass(raster,train,validation=vali,responseCol='id')
@@ -43,3 +55,4 @@ map2 <- ggR(class$map, forceCat=TRUE, geom_raster=TRUE)+ggtitle("Classification"
 
 library(ggpubr)
 ggarrange(map1,map2,ncol=2,common.legend = TRUE, legend="right")
+
