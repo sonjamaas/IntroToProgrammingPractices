@@ -3,6 +3,7 @@ library(raster)
 library(cluster)
 library(sf)
 library(RStoolbox)
+library(ggplot2)
 install.packages("rgdal")
 
 #################################
@@ -55,4 +56,10 @@ map2 <- ggR(class$map, forceCat=TRUE, geom_raster=TRUE)+ggtitle("Classification"
 
 library(ggpubr)
 ggarrange(map1,map2,ncol=2,common.legend = TRUE, legend="right")
+
+######################
+### Calculate NDVI ###
+######################
+
+ndvi <- spectralIndices(raster ,red="B3_dn",nir="B4_dn", indices = "NDVI")
 
