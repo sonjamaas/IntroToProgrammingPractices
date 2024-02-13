@@ -1,5 +1,5 @@
 ## Get into nature the fastest way possible
-
+install.packages("geos")
 # load required libraries
 library(tidyverse)
 library(osmdata)
@@ -92,13 +92,13 @@ extractForest <- function(aoi){
 }
 
 extractSpecialForest <- function(aoi){
-  specialforest <- aoi%>%
+  specialForest <- aoi%>%
     opq()%>%
     add_osm_feature(key="leaf_type",
                     value = c("mixed","coniferous","deciduous")) %>%
     osmdata_sf()
   
-  return(specialforest)
+  return(specialForest)
 }
 
 extractWood <- function(aoi){
@@ -217,7 +217,7 @@ finalPlot <- function(streets, river, forest,
             inherit.aes = FALSE,
             fill = "chartreuse4",
             size = 2) +
-    geom_sf(data = specialforest$osm_polygons,
+    geom_sf(data = specialForest$osm_polygons,
             inherit.aes = FALSE,
             fill = "chartreuse4",
             size = 2) +
@@ -301,7 +301,7 @@ whereRthetrees <- function(x,y,buffer){
   # plot the osm data
   plotFinal <- finalPlot(streets, river, forest, 
                          specialForest, wood, singleTree, 
-                         treeLine, grasslandAndBushes, 
+                         treeLine, grassland, 
                          meadow, park, garden, 
                          natureReserve, pov, xlim, ylim)
   return(plotFinal)
@@ -311,7 +311,8 @@ whereRthetrees <- function(x,y,buffer){
 ### Testing the functions ###
 #############################
 
-whereRthetrees(12.179503, 53.147339, 500)
+whereRthetrees(9.183377, 45.476302, 500)
+
 
 areaofint <- spatialExtent(12.179503, 53.147339, 500)
 pov <- getPOV(12.179503, 53.147339)
@@ -331,6 +332,7 @@ coordClosest <- distA$destinations[c(nameclosest),]
 
 
 closestForest <- c(distAsorted[1])
+
 ############################
 ### Code as non-function ###
 ############################
